@@ -2,10 +2,20 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 
 //inicializar variables
 
 const app = express();
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// importar rutas
+const appRoutes = require("./routes/app");
+const usuarioRoutes = require("./routes/usuario");
+
 // conexion bd
 mongoose.connection.openUri(
   "mongodb://localhost:27017/hospitalDB",
@@ -15,17 +25,12 @@ mongoose.connection.openUri(
   }
 );
 
-// escuchar peticiones
-
 // Rutas
 
-app.get("/", (req, res, next) => {
-  res.status(404).json({
-    ok: true,
-    mensaje: "respuesta de servidor correcta"
-  });
-});
+app.use("/usuario", usuarioRoutes);
+app.use("/", appRoutes);
+// escuchar peticiones
 
-app.listen(3001, () => {
+app.listen(3000, () => {
   console.log("servidor expres: \x1b[32m%s\x1b[0m", " online");
 });
